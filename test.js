@@ -13,7 +13,8 @@ const req = http.request(options, res => {
   res.on('end', () => {
     try {
       const json = JSON.parse(data);
-      if (json.status === 'Running') {
+
+      if (json.status === 'Running auto') {
         console.log('Test passed!');
         process.exit(0);
       } else {
