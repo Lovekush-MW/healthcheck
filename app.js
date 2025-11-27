@@ -13,7 +13,7 @@ const server = http.createServer((req, res) => {
 
   if (req.url === "/health") {
     const payload = {
-      status: "Running auto",
+      status: "ok",
       time: new Date().toISOString(),
       pid: process.pid
     };
