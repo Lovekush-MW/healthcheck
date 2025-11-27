@@ -1,24 +1,17 @@
 ﻿const http = require("http");
 
 const PORT = process.env.PORT || 4000;
-const server = http.createServer((req, res) => {
 
+const server = http.createServer((req, res) => {
   if (req.url === "/") {
-    // Root route
-    const payload = { message: "Healthcheck App Running!" };
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(payload));
+    res.end(JSON.stringify({ message: "Healthcheck App Running!" }));
     return;
   }
 
   if (req.url === "/health") {
-    const payload = {
-      status: "ok",
-      time: new Date().toISOString(),
-      pid: process.pid
-    };
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(payload));
+    res.end(JSON.stringify({ status: "ok" }));
     return;
   }
 
