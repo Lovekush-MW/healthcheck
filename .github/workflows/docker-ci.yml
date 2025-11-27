@@ -22,12 +22,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Start app
+      - name: Start app from source
         run: |
           nohup node app.js > server.log 2>&1 &
           sleep 3
 
-      - name: Run tests
+      - name: Run tests against local app
         run: npm test
 
       - name: Log in to Docker Hub
@@ -36,9 +36,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Docker image
+      - name: Build Docker image (fresh)
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/healthcheck-app:latest .
+          docker build --no-cache -t ${{ secrets.DOCKERHUB_USERNAME }}/healthcheck-app:latest .
 
       - name: Push Docker image
         run: |
