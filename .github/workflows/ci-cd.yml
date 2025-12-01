@@ -1,0 +1,57 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: node test.js
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t lovekush1702/healthcheck-app:latest .
+          docker tag lovekush1702/healthcheck-app:latest lovekush1702/healthcheck-app:${{ github.sha }}
+
+      - name: Push Docker image
+        run: |
+          docker push lovekush1702/healthcheck-app:latest
+          docker push lovekush1702/healthcheck-app:${{ github.sha }}
+
+  deploy-to-ec2:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH to EC2 and deploy
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker stop healthcheck || true
+            docker rm healthcheck || true
+            docker pull lovekush1702/healthcheck-app:latest
+            docker run -d --name healthcheck -p 80:4000 lovekush1702/healthcheck-app:latest
