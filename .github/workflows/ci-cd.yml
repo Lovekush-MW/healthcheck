@@ -40,18 +40,20 @@ jobs:
           docker push lovekush1702/healthcheck-app:${{ github.sha }}
 
   deploy-to-ec2:
-    needs: build-and-push
-    runs-on: ubuntu-latest
+  needs: build-and-push
+  runs-on: ubuntu-latest
 
-    steps:
-      - name: SSH to EC2 and deploy
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            docker stop healthcheck || true
-            docker rm healthcheck || true
-            docker pull lovekush1702/healthcheck-app:latest
-            docker run -d --name healthcheck -p 80:4000 lovekush1702/healthcheck-app:latest
+  steps:
+    - name: SSH and deploy with Docker Compose
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd ~/healthcheck
+          export IMAGE_TAG=${{ github.sha }}
+          sed -i "s/\${IMAGE_TAG:-latest}/${IMAGE_TAG}/" docker-compose.yml
+          docker compose pull
+          docker compose up -d
+          docker system prune -f

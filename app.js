@@ -25,6 +25,7 @@ const server = http.createServer((req, res) => {
   res.end(JSON.stringify({ error: "not_found" }));
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`health-check listening on port ${PORT}`);
 });
+

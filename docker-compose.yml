@@ -1,11 +1,10 @@
-version: "3.9"
-
 services:
-  healthcheck-app:
-    image: lovekush1702/healthcheck-app:latest
+  healthcheck:
+    build: .
+    image: lovekush1702/healthcheck-app:${IMAGE_TAG:-latest}
     container_name: healthcheck
     ports:
-      - "4000:4000"
+      - "80:4000"
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
