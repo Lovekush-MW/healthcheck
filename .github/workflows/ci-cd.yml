@@ -31,12 +31,12 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t lovekush1702/healthcheck-app:latest .
-          docker tag lovekush1702/healthcheck-app:latest lovekush1702/healthcheck-app:${{ github.sha }}
+          docker build -t lovekush1702/healthcheck-app:${{ env.IMAGE_TAG }} .
+          docker tag lovekush1702/healthcheck-app:${{ env.IMAGE_TAG }} lovekush1702/healthcheck-app:${{ github.sha }}
 
       - name: Push Docker image
         run: |
-          docker push lovekush1702/healthcheck-app:latest
+          docker push lovekush1702/healthcheck-app:${{ env.IMAGE_TAG }}
           docker push lovekush1702/healthcheck-app:${{ github.sha }}
 
   deploy-to-ec2:
