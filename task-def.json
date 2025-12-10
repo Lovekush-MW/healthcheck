@@ -1,0 +1,21 @@
+{
+  "family": "healthcheck-task",
+  "networkMode": "awsvpc",
+  "executionRoleArn": "arn:aws:iam::<YOUR-ACCOUNT-ID>:role/ecsTaskExecutionRole",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "containerDefinitions": [
+    {
+      "name": "healthcheck",
+      "image": "lovekush1702/healthcheck-app:v1.0.1",
+      "portMappings": [
+        {
+          "containerPort": 4000,
+          "protocol": "tcp"
+        }
+      ]
+    }
+  ]
+}
+
